@@ -17,7 +17,7 @@ def demonstration(p):
     print(f"Coordinates: X={x}, Y={y}, Z={z}")
 
 def main():
-    print("=== Game Coordinate System ===")
+    print("=== Game Coordinate System ===\n")
     init_position = (0, 0, 0)
     if len(sys.argv) > 1:
         for i in range(1, len(sys.argv)):
@@ -28,7 +28,7 @@ def main():
                 print(f"Parsed position: {parsed_pos}")
                 distance = cal_distance(init_position, parsed_pos)
                 print(f"Distance between {init_position} and {parsed_pos}: {distance:.2f}")
-                print("Unpacking demonstration:")
+                print("\nUnpacking demonstration:")
                 demonstration(parsed_pos)
             except ValueError as e:
                 print(f"Error parsing coordinates: {e}")
