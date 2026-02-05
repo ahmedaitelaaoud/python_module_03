@@ -6,6 +6,8 @@ elegant data transformation and analysis.
 """
 
 
+
+
 def get_game_data():
     """Return the game analytics dataset."""
     data = {
@@ -165,7 +167,6 @@ def dict_comprehension_examples(data):
     print("=== Dict Comprehension Examples ===")
 
     players = data['players']
-    sessions = data['sessions']
 
     # Create mapping: player name -> total score
     player_scores = {name: info['total_score']
@@ -184,10 +185,14 @@ def dict_comprehension_examples(data):
     print(f"High achievers (>=5): {high_achievers}")
 
     # Group by category: Count players by favorite mode
-    mode_counts = {}
-    for player_info in players.values():
-        mode = player_info['favorite_mode']
-        mode_counts[mode] = mode_counts.get(mode, 0) + 1
+    all_favorite_modes = [info['favorite_mode'] for info in players.values()]
+    mode_counter = {}
+    for mode in all_favorite_modes:
+        mode_counter[mode] = mode_counter.get(mode, 0) + 1
+    mode_counts = {
+        mode: mode_counter[mode]
+        for mode in set(all_favorite_modes)
+    }
     print(f"Players by mode: {mode_counts}")
 
     # Transform: player name -> average score per session
@@ -240,7 +245,7 @@ def combined_analysis(data):
     sessions = data['sessions']
 
     # Total unique players
-    total_players = len({name for name in players.keys()})
+    total_players = len(players)
     print(f"Total players: {total_players}")
 
     # Total unique achievements possible
@@ -248,7 +253,7 @@ def combined_analysis(data):
     print(f"Total achievements available: {total_achievements}")
 
     # Average level across all players
-    avg_level = sum([info['level'] for info in players.values()]) / len(players)
+    avg_level = sum(info['level'] for info in players.values()) / total_players
     print(f"Average player level: {avg_level:.1f}")
 
     # Find top performer (highest total score)
@@ -265,7 +270,7 @@ def combined_analysis(data):
 
     # Completion rate
     total_sessions = len(sessions)
-    completed_sessions = len([s for s in sessions if s['completed']])
+    completed_sessions = sum(1 for s in sessions if s['completed'])
     completion_rate = (completed_sessions / total_sessions) * 100
     print(f"Session completion rate: {completion_rate:.1f}%")
 

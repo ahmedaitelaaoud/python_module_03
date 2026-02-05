@@ -108,25 +108,25 @@ def player_inventory(data_set, player_name):
             total_value += item_total_val
             total_count += quantity
 
-            current_cat_qty = categories.get(i_type, 0)
-            categories.update({i_type: current_cat_qty + quantity})
-            print(f"{item_key} ({i_type}, {i_rarity}): "
-                  f"{quantity}x @ {i_val} gold each = {item_total_val} gold")
+            categories[i_type] = categories.get(i_type, 0) + quantity
+            print(
+                f"{item_key} ({i_type}, {i_rarity}): {quantity}x @ "
+                f"{i_val} gold each = {item_total_val} gold"
+            )
 
     print(f"Inventory value: {total_value} gold")
     print(f"Item count: {total_count} items")
 
-    cat_string = ""
-    for cat, count in categories.items():
-        if len(cat_string) > 0:
-            cat_string += ", "
-        cat_string += f"{cat}({count})"
+    cat_string = ", ".join(
+        f"{cat}({count})" for cat, count in categories.items()
+    )
     print(f"Categories: {cat_string}\n")
 
 
 def transfer_item(data_set, from_player, to_player, item_name, quantity):
     """Transfer items between players dynamically."""
-    print(f"=== Transaction: {from_player} gives {to_player} {quantity} {item_name} ===")
+    print(f"=== Transaction: {from_player} gives {to_player} {quantity} "
+          f"{item_name} ===")
     players = data_set.get('players')
 
     # Check if both players exist
@@ -181,31 +181,25 @@ def transfer_item(data_set, from_player, to_player, item_name, quantity):
 def find_most_valuable_player(data_set):
     """Find the player with the highest inventory value."""
     players = data_set.get('players')
-    max_value = 0
-    richest_player = None
+    if not players:
+        return None, 0
 
-    for player_name, player_data in players.items():
-        value = player_data.get('total_value', 0)
-        if value > max_value:
-            max_value = value
-            richest_player = player_name
-
-    return richest_player, max_value
+    richest_player, player_data = max(
+        players.items(), key=lambda item: item[1].get('total_value', 0)
+    )
+    return richest_player, player_data.get('total_value', 0)
 
 
 def find_player_with_most_items(data_set):
     """Find the player with the most items."""
     players = data_set.get('players')
-    max_items = 0
-    player_with_most = None
+    if not players:
+        return None, 0
 
-    for player_name, player_data in players.items():
-        item_count = player_data.get('item_count', 0)
-        if item_count > max_items:
-            max_items = item_count
-            player_with_most = player_name
-
-    return player_with_most, max_items
+    player_with_most, player_data = max(
+        players.items(), key=lambda item: item[1].get('item_count', 0)
+    )
+    return player_with_most, player_data.get('item_count', 0)
 
 
 def find_rarest_items(data_set):
@@ -213,14 +207,12 @@ def find_rarest_items(data_set):
     catalog = data_set.get('catalog')
     players = data_set.get('players')
 
-    rare_items = set()
-
-    for player_data in players.values():
-        for item_name in player_data['items'].keys():
-            if catalog[item_name]['rarity'] == 'rare':
-                rare_items.add(item_name)
-
-    return rare_items
+    return {
+        item_name
+        for player_data in players.values()
+        for item_name in player_data['items'].keys()
+        if catalog[item_name]['rarity'] == 'rare'
+    }
 
 
 def get_player_item_count(data_set, player_name, item_name):
@@ -239,18 +231,17 @@ def main():
     data_set = get_data_set()
 
     # Display Alice's inventory
-    player_inventory(data_set, 'diana')
-
+    player_inventory(data_set, 'charlie')
 
     # Note: Alice only has 1 code_bow, so let's transfer that
-    if transfer_item(data_set, 'charlie', 'alice', 'code_bow', 1):
+    if transfer_item(data_set, 'diana', 'bob', 'pixel_sword', 20):
         print("Transaction successful!\n")
 
     # Display updated inventories
     print("=== Updated Inventories ===")
-    alice_bows = get_player_item_count(data_set, 'alice', 'code_bow')
-    bob_bows = get_player_item_count(data_set, 'bob', 'code_bow')
-    print(f"Alice code_bow: {alice_bows}")
+    alice_bows = get_player_item_count(data_set, 'diana', 'pixel_sword')
+    bob_bows = get_player_item_count(data_set, 'bob', 'pixel_sword')
+    print(f"Diana code_bow: {alice_bows}")
     print(f"Bob code_bow: {bob_bows}\n")
 
     # Analytics
@@ -272,4 +263,5 @@ def main():
         print(f"Rarest items: {rare_items_str}")
 
 
-main()
+if __name__ == "__main__":
+    main()

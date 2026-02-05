@@ -3,7 +3,7 @@
 Demonstrates set operations for unique and shared achievements.
 """
 
-from collections import Counter
+
 
 
 def get_data_set():
@@ -51,9 +51,10 @@ def main():
 
     print(f"Common to all players: {common_achievements}")
 
-    achievement_counts = Counter()
+    achievement_counts = {}
     for achievements in player_sets.values():
-        achievement_counts.update(achievements)
+        for achievement in achievements:
+            achievement_counts[achievement] = achievement_counts.get(achievement, 0) + 1
     rare_achievements = {
         achievement
         for achievement, count in achievement_counts.items()

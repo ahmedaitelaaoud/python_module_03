@@ -4,14 +4,12 @@ Work with tuples and basic geometry in a simple 3D world.
 """
 
 import sys
-import math
+
 
 
 def cal_distance(p1, p2):
     """Return the Euclidean distance between two 3D points."""
-    return math.sqrt(
-        (p2[0] - p1[0])**2 + (p2[1] - p1[1])**2 + (p2[2] - p1[2])**2
-    )
+    return ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2 + (p2[2] - p1[2])**2) ** 0.5
 
 
 def parsing_coor(coor):
