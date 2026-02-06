@@ -231,18 +231,17 @@ def main():
     data_set = get_data_set()
 
     # Display Alice's inventory
-    player_inventory(data_set, 'charlie')
+    player_inventory(data_set, 'alice')
 
-    # Note: Alice only has 1 code_bow, so let's transfer that
-    if transfer_item(data_set, 'diana', 'bob', 'pixel_sword', 20):
+    if transfer_item(data_set, 'diana', 'bob', 'pixel_sword', 2):
         print("Transaction successful!\n")
 
     # Display updated inventories
     print("=== Updated Inventories ===")
     alice_bows = get_player_item_count(data_set, 'diana', 'pixel_sword')
     bob_bows = get_player_item_count(data_set, 'bob', 'pixel_sword')
-    print(f"Diana code_bow: {alice_bows}")
-    print(f"Bob code_bow: {bob_bows}\n")
+    print(f"Diana pixel_sword: {alice_bows}")
+    print(f"Bob pixel_sword: {bob_bows}\n")
 
     # Analytics
     print("=== Inventory Analytics ===")

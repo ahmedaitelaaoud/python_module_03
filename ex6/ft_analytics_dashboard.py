@@ -130,167 +130,98 @@ def get_game_data():
 def list_comprehension_examples(data):
     """Demonstrate list comprehensions for filtering and transformation."""
     print("=== List Comprehension Examples ===")
-
     players = data['players']
-    sessions = data['sessions']
 
-    # Filter: High-level players (level > 30)
-    high_level_players = [name for name, info in players.items()
-                          if info['level'] > 30]
-    print(f"High-level players (>30): {high_level_players}")
+    high_scorers = [name for name, info in players.items()
+                    if info['total_score'] >= 5000]
+    print(f"High scorers {high_scorers}")
 
-    # Transform: Double all player scores
     doubled_scores = [info['total_score'] * 2
                       for info in players.values()]
-    print(f"Scores doubled: {doubled_scores}")
+    print(f"Scores doubled {doubled_scores}")
 
-    # Filter: Active players (sessions > 20)
     active_players = [name for name, info in players.items()
                       if info['sessions_played'] > 20]
-    print(f"Active players (>20 sessions): {active_players}")
-
-    # Filter: High-scoring sessions (score > 2000)
-    high_score_sessions = [session['player']
-                           for session in sessions
-                           if session['score'] > 2000]
-    print(f"Players with high-score sessions: {high_score_sessions[:5]}")
-
-    # Transform: Extract all session scores
-    all_scores = [session['score'] for session in sessions]
-    print(f"All session scores (first 10): {all_scores[:10]}")
-
-    print()
+    print(f"Active players: {active_players}")
 
 
 def dict_comprehension_examples(data):
     """Demonstrate dictionary comprehensions for mappings and grouping."""
     print("=== Dict Comprehension Examples ===")
-
     players = data['players']
 
-    # Create mapping: player name -> total score
     player_scores = {name: info['total_score']
                      for name, info in players.items()}
     print(f"Player scores: {player_scores}")
 
-    # Create mapping: player name -> level
-    player_levels = {name: info['level']
-                     for name, info in players.items()}
-    print(f"Player levels: {player_levels}")
-
-    # Filter and map: Only high achievers (>= 5 achievements)
-    high_achievers = {name: info['achievements_count']
-                      for name, info in players.items()
-                      if info['achievements_count'] >= 5}
-    print(f"High achievers (>=5): {high_achievers}")
-
-    # Group by category: Count players by favorite mode
-    all_favorite_modes = [info['favorite_mode'] for info in players.values()]
-    mode_counter = {}
-    for mode in all_favorite_modes:
-        mode_counter[mode] = mode_counter.get(mode, 0) + 1
-    mode_counts = {
-        mode: mode_counter[mode]
-        for mode in set(all_favorite_modes)
+    score_categories = {
+        name: (
+            'low' if info['total_score'] < 2000
+            else 'mid' if info['total_score'] < 5000
+            else 'high'
+        )
+        for name, info in players.items()
     }
-    print(f"Players by mode: {mode_counts}")
+    print(f"Score categories: {score_categories}")
 
-    # Transform: player name -> average score per session
-    avg_scores = {name: info['total_score'] // info['sessions_played']
-                  for name, info in players.items()
-                  if info['sessions_played'] > 0}
-    print(f"Average score per session: {avg_scores}")
-
-    print()
+    achievement_counts = {name: info['achievements_count']
+                          for name, info in players.items()}
+    print(f"Achievement counts: {achievement_counts}")
 
 
 def set_comprehension_examples(data):
     """Demonstrate set comprehensions for unique data analysis."""
     print("=== Set Comprehension Examples ===")
-
     players = data['players']
     sessions = data['sessions']
 
-    # Unique players in dataset
     unique_players = {name for name in players.keys()}
     print(f"Unique players: {unique_players}")
 
-    # Unique game modes from sessions
-    unique_modes = {session['mode'] for session in sessions}
-    print(f"Unique modes played: {unique_modes}")
+    unique_achievements = {name for name in data['achievements']}
+    print(f"Unique achievements: {unique_achievements}")
 
-    # Unique players who completed sessions
-    completed_players = {session['player'] for session in sessions
-                         if session['completed']}
-    print(f"Players with completions: {completed_players}")
-
-    # High-level player names (level >= 40)
-    high_level_set = {name for name, info in players.items()
-                      if info['level'] >= 40}
-    print(f"High-level players (>=40): {high_level_set}")
-
-    # Players who played ranked mode
-    ranked_players = {session['player'] for session in sessions
-                      if session['mode'] == 'ranked'}
-    print(f"Ranked mode players: {ranked_players}")
-
-    print()
+    active_regions = {session['mode'] for session in sessions}
+    print(f"Active regions: {active_regions}")
 
 
 def combined_analysis(data):
     """Demonstrate combined comprehensions for complex analytics."""
     print("=== Combined Analysis ===")
-
     players = data['players']
-    sessions = data['sessions']
 
-    # Total unique players
     total_players = len(players)
     print(f"Total players: {total_players}")
 
-    # Total unique achievements possible
-    total_achievements = len(data['achievements'])
-    print(f"Total achievements available: {total_achievements}")
+    total_unique_achievements = len({a for a in data['achievements']})
+    print(f"Total unique achievements: {total_unique_achievements}")
 
-    # Average level across all players
-    avg_level = sum(info['level'] for info in players.values()) / total_players
-    print(f"Average player level: {avg_level:.1f}")
+    average_score = (
+        sum(info['total_score'] for info in players.values()) / total_players
+    )
+    print(f"Average score: {average_score:.2f}")
 
-    # Find top performer (highest total score)
-    top_player = max(players.items(), key=lambda x: x[1]['total_score'])
-    print(f"Top performer: {top_player[0]} "
-          f"({top_player[1]['total_score']} points, "
-          f"{top_player[1]['achievements_count']} achievements)")
-
-    # Most active player (most sessions)
-    most_active = max(players.items(),
-                      key=lambda x: x[1]['sessions_played'])
-    print(f"Most active: {most_active[0]} "
-          f"({most_active[1]['sessions_played']} sessions)")
-
-    # Completion rate
-    total_sessions = len(sessions)
-    completed_sessions = sum(1 for s in sessions if s['completed'])
-    completion_rate = (completed_sessions / total_sessions) * 100
-    print(f"Session completion rate: {completion_rate:.1f}%")
+    top_name, top_info = max(
+        players.items(), key=lambda item: item[1]['total_score']
+    )
+    print(f"Top performer: {top_name}")
 
 
 def main():
     """Main function demonstrating comprehensions."""
-    print("=== Game Analytics Dashboard ===\n")
-
     # Get data
     data = get_game_data()
 
+    print("=== Game Analytics Dashboard ===\n")
     # List comprehensions
     list_comprehension_examples(data)
-
+    print()
     # Dictionary comprehensions
     dict_comprehension_examples(data)
-
+    print()
     # Set comprehensions
     set_comprehension_examples(data)
-
+    print()
     # Combined analysis
     combined_analysis(data)
 

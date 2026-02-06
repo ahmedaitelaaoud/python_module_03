@@ -51,15 +51,7 @@ def main():
 
     print(f"Common to all players: {common_achievements}")
 
-    achievement_counts = {}
-    for achievements in player_sets.values():
-        for achievement in achievements:
-            achievement_counts[achievement] = achievement_counts.get(achievement, 0) + 1
-    rare_achievements = {
-        achievement
-        for achievement, count in achievement_counts.items()
-        if count == 1
-    }
+    rare_achievements = set.difference(*player_sets.values())
 
     print(f"Rare achievements (1 player): {rare_achievements}")
 
